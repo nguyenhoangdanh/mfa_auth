@@ -29,14 +29,6 @@ app.use(
 app.use(cookieParser());
 app.use(passport.initialize());
 
-app.get(`/`, 
-    asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
-        res.status(HTTPSTATUS.OK).json({
-            message: 'Welcome to the API',
-        });
-    })
-)
-
 app.use(`${BASE_PATH}/auth`, authRoutes);
 
 app.use(`${BASE_PATH}/mfa`, mfaRoutes);
