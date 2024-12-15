@@ -1,6 +1,5 @@
-import { ErrorRequestHandler, Response } from "express";
+import { ErrorRequestHandler, Response, Request, NextFunction } from "express";
 import { HTTPSTATUS } from "../config/http.config";
-import { AppError } from "../common/utils/AppError";
 import * as z from 'zod';
 import { clearAuthenticaionCookies, REFRESH_PATH } from "../common/utils/cookie";
 
@@ -15,7 +14,7 @@ const formatError = (res: Response, error: z.ZodError) => {
     });
 };
 
-export const errorHandler: ErrorRequestHandler = (error, req, res, next): any => {
+export const errorHandler: ErrorRequestHandler = (error: any, req: Request, res: Response, next: NextFunction): any => {
     console.error(`Error: occured on PATH: ${req.path} METHOD: ${req.method} `, error);
 
     if(req.path === REFRESH_PATH) {

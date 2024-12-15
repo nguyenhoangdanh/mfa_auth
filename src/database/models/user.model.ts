@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { comparePassword, hashPassword } from "../../common/utils/bcrypt";
-import { user } from "@nextui-org/react";
 
 interface IUserPreferences {
     enable2FA: boolean;
