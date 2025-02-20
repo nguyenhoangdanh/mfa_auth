@@ -29,6 +29,9 @@ app.use(
 
 app.use(cookieParser());
 app.use(passport.initialize());
+app.get("/", (req, res) => {
+    res.send("Hello from Express with TypeScript on Vercel!");
+  });
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 
