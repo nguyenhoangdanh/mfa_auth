@@ -11,11 +11,9 @@ import {sendEmail} from '../../mailers/templates/mailer';
 import {mfaSetupTemplate} from '../../mailers/templates/template';
 import UserModel from '../../database/models/user.model';
 import SessionModel from '../../database/models/session.model';
-import { refreshTokenSignOptions, signJwtToken } from '../../common/utils/jwt';
+import {refreshTokenSignOptions, signJwtToken} from '../../common/utils/jwt';
 export class MfaService {
-  constructor() {
-    console.log('MfaService created');
-  }
+  constructor() {}
 
   public async generateMFASetup(req: Request) {
     const user = req.user;
@@ -89,8 +87,6 @@ export class MfaService {
       token: tokenCode,
     });
 
-    console.log('isValid', isValid);
-
     if (!isValid) {
       throw new BadRequestException('Invalid MFA code. Please try again.');
     }
@@ -113,7 +109,7 @@ export class MfaService {
       throw new UnauthorizedException('User not unauthorized');
     }
 
-    if (!user.userPreferences.enable2FA) {
+    if (!user?.userPreferences.enable2FA) {
       return {
         message: 'MFA already disabled',
         userPreferences: {

@@ -15,8 +15,11 @@ import {
   getRefreshTokenCookieOptions,
   setAuthenticaionCookies,
 } from '../../common/utils/cookie';
-import {NotFoundException, UnauthorizedException} from '../../common/utils/catch-error';
-import { ErrorCode } from '../../common/enums/error-code.enum';
+import {
+  NotFoundException,
+  UnauthorizedException,
+} from '../../common/utils/catch-error';
+import {ErrorCode} from '../../common/enums/error-code.enum';
 
 export class AuthController {
   private readonly authService: AuthService;
@@ -49,13 +52,13 @@ export class AuthController {
       const {user, accessToken, refreshToken, mfaRequired} =
         await this.authService.login(body);
 
-        if (mfaRequired) {
-          return res.status(HTTPSTATUS.OK).json({
-              message: 'Verify MFA authentication',
-              user,
-              mfaRequired,
-            });
-        }
+      if (mfaRequired) {
+        return res.status(HTTPSTATUS.OK).json({
+          message: 'Verify MFA authentication',
+          user,
+          mfaRequired,
+        });
+      }
 
       return setAuthenticaionCookies({
         res,
@@ -101,15 +104,15 @@ export class AuthController {
     },
   );
 
-  public verifyEmail  = asyncHandler(
+  public verifyEmail = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
-    const { code } = verificationEmailSchema.parse(req.body);
-    await this.authService.verifyEmail(code);
-    return res.status(HTTPSTATUS.OK).json({
-      message: 'Email verified successfully',
-    });
+      const {code} = verificationEmailSchema.parse(req.body);
+      await this.authService.verifyEmail(code);
+      return res.status(HTTPSTATUS.OK).json({
+        message: 'Email verified successfully',
+      });
     },
-  )
+  );
 
   public forgotPassword = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
@@ -126,27 +129,23 @@ export class AuthController {
       const body = resetPasswordSchema.parse(req.body);
       await this.authService.resetPassword(body);
 
-      return clearAuthenticaionCookies(res)
-        .status(HTTPSTATUS.OK)
-        .json({
-          message: 'Password reset successfully',
-        });
+      return clearAuthenticaionCookies(res).status(HTTPSTATUS.OK).json({
+        message: 'Password reset successfully',
+      });
     },
   );
   public logout = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
       const sessionId = req.sessionId;
-      if(!sessionId){
+      if (!sessionId) {
         throw new NotFoundException('Session not found');
       }
 
       await this.authService.logout(sessionId);
 
-      return clearAuthenticaionCookies(res)
-        .status(HTTPSTATUS.OK)
-        .json({
-          message: 'User logged out successfully',
-        });
+      return clearAuthenticaionCookies(res).status(HTTPSTATUS.OK).json({
+        message: 'User logged out successfully',
+      });
     },
   );
 }

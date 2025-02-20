@@ -3,7 +3,6 @@ import { authController } from "./auth.module";
 import { authenticateJwt } from "../../common/strategies/jwt.strategy";
 
 
-
 const authRoutes = Router();
 
 authRoutes.post("/register", authController.register);
