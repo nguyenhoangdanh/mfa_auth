@@ -1,4 +1,4 @@
-import e, {Request, Response} from 'express';
+import {Request, Response} from 'express';
 import {asyncHandler} from '../../middlewares/asyncHandler';
 import {AuthService} from './auth.service';
 import {HTTPSTATUS} from '../../config/http.config';
@@ -42,7 +42,14 @@ export class AuthController {
   );
   public login = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
-      const userAgent = req.headers['user-agent'];
+      // const userAgent = req.headers['user-agent'];
+      const userAgent = req.headers['user-agent'] as string | undefined;
+      if (!userAgent) {
+        throw new UnauthorizedException(
+          'Unauthorized access token',
+          ErrorCode.AUTH_TOKEN_NOT_FOUND,
+        );
+      }
 
       const body = loginSchema.parse({
         ...req.body,
@@ -77,8 +84,6 @@ export class AuthController {
   public refreshToken = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
       const refreshToken = req.cookies.refreshToken as string | undefined;
-      const userAgent = req.headers['user-agent'];
-      console.log('Received refreshToken:', refreshToken); // Debug log
 
       if (!refreshToken) {
         throw new UnauthorizedException('Missing refresh token');

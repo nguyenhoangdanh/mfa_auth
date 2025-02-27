@@ -1,53 +1,84 @@
-import { ExtractJwt, StrategyOptionsWithRequest, Strategy as JWTStrategy } from "passport-jwt";
-import { UnauthorizedException } from "../utils/catch-error";
-import { ErrorCode } from "../enums/error-code.enum";
-import { config } from "../../config/app.config";
-import passport, { PassportStatic } from "passport";
-import { userService } from "../../modules/user/user.module";
-import { Request } from "express";
+import {
+  ExtractJwt,
+  StrategyOptionsWithRequest,
+  Strategy as JWTStrategy,
+} from 'passport-jwt';
+import {UnauthorizedException} from '../utils/catch-error';
+import {ErrorCode} from '../enums/error-code.enum';
+import {config} from '../../config/app.config';
+import passport, {PassportStatic} from 'passport';
+import {userService} from '../../modules/user/user.module';
+import {NextFunction, Request, Response} from 'express';
 
 interface IJwtPayload {
-    userId: string;
-    sessionId: string;
+  userId: string;
+  sessionId: string;
 }
 
 const options: StrategyOptionsWithRequest = {
-    jwtFromRequest: ExtractJwt.fromExtractors([
-        (req) =>{
-            const accessToken = req.cookies['accessToken'];
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    req => {
+      const accessToken = req.cookies['accessToken'];
 
-            if(!accessToken){
-                throw new UnauthorizedException(
-                    'Unauthorized access token',
-                    ErrorCode.AUTH_TOKEN_NOT_FOUND
-                )
-            }
+      if (!accessToken) {
+        throw new UnauthorizedException(
+          'Unauthorized access token',
+          ErrorCode.AUTH_TOKEN_NOT_FOUND,
+        );
+      }
 
-            return accessToken;
-        }
-    ]),
-    secretOrKey: config.JWT.SECRET,
-    audience: ["user"],
-    algorithms: ["HS256"],
-    passReqToCallback: true,
-}
+      return accessToken || null;
+    },
+  ]),
+  secretOrKey: config.JWT.SECRET,
+  audience: ['user'],
+  algorithms: ['HS256'],
+  passReqToCallback: true,
+};
 
 export const setupJwtStrategy = (passport: PassportStatic) => {
-    passport.use(new JWTStrategy(options, async (req: Request, payload: IJwtPayload, done) => {
+  passport.use(
+    new JWTStrategy(
+      options,
+      async (req: Request, payload: IJwtPayload, done) => {
         try {
-            const user  = await userService.finfUserById(payload.userId);
+          const user = await userService.findUserById(payload.userId);
 
-            if (!user) {
-                return done(null, false);
-            }
+          if (!user) {
+            return done(null, false);
+          }
 
-            req.sessionId = payload.sessionId;
-            return done(null, user);
+          req.sessionId = payload.sessionId;
+          return done(null, user);
         } catch (error) {
-            return done(error, false);
+          return done(error, false);
         }
-    }))
-}
+      },
+    ),
+  );
+};
 
+// export const authenticateJwt = passport.authenticate('jwt', {session: false});
 
-export const authenticateJwt = passport.authenticate('jwt', {session: false});
+export const authenticateJwt = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  passport.authenticate(
+    'jwt',
+    {session: false},
+    (err: Error | null, user: Express.User | false, info: any) => {
+      if (err || !user) {
+        return res
+          .status(401)
+          .json({
+            message: 'Unauthorized',
+            error: info?.message || err?.message,
+          });
+      }
+      req.user = user;
+      next();
+    },
+  );
+};

@@ -10,6 +10,8 @@ type CookiePayloadType = {
 
 const defaults: CookieOptions = {
     httpOnly: true,
+    secure: config.NODE_ENV === "production", // Bật khi deploy
+    sameSite: config.NODE_ENV === "production" ? "strict" : "lax",
     // secure: config.NODE_ENV === 'production' ? true : false,
     // sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
 }
@@ -43,6 +45,8 @@ export const setAuthenticaionCookies = ({ res, accessToken, refreshToken }: Cook
     return res;
 };
 export const clearAuthenticaionCookies = (res: Response): Response =>
-    res.clearCookie('accessToken').clearCookie('refreshToken',{
+    res.clearCookie('accessToken', {
+        path: "/",
+    }).clearCookie('refreshToken',{
         path: REFRESH_PATH,
     });

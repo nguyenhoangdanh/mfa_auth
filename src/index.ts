@@ -4,8 +4,6 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { config } from './config/app.config';
 import { errorHandler } from './middlewares/errorHandler';
-import { HTTPSTATUS } from './config/http.config';
-import { asyncHandler } from './middlewares/asyncHandler';
 import { authRoutes } from './modules/auth/auth.routes';
 import connectDatabase from './database/database';
 import passport from './middlewares/passport';
@@ -29,9 +27,9 @@ app.use(
 
 app.use(cookieParser());
 app.use(passport.initialize());
-app.get("/", (req, res) => {
-    res.send("Hello from Express with TypeScript on Vercel!");
-  });
+// app.get("/", (req, res) => {
+//     res.send("Hello from Express with TypeScript on Vercel!");
+//   });
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 

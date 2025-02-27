@@ -6,6 +6,9 @@ declare global {
         interface User extends UserDocument {}
         interface Request {
             sessionId?: string;
+            user?: UserDocument;
         }
     }
 }
+
+export {}; // This is needed to prevent TS from throwing an error when using the file as a module

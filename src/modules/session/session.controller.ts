@@ -16,6 +16,18 @@ export class SessionController {
     const userId = req.user?.id;
     const sessionId = req.sessionId;
 
+    if (!userId) {
+      return res.status(HTTPSTATUS.UNAUTHORIZED).json({
+        message: 'Unauthorized access',
+      });
+    }
+
+    if (!sessionId) {
+      return res.status(HTTPSTATUS.BAD_REQUEST).json({
+        message: 'Session ID not found. Please login again!',
+      });
+    }
+
     const {sessions} = await this.sessionService.getAllSessions(userId);
 
     const modifySessions = sessions.map((session) => ({
@@ -34,9 +46,11 @@ export class SessionController {
   public getSession = asyncHandler(async (req: Request, res: Response) => {
     const sessionId = req.sessionId;
 
-    if (!sessionId) {
-        throw new NotFoundException('Session ID not found. Please login again!');
-    }
+    if (!sessionId){
+     return res.status(HTTPSTATUS.BAD_REQUEST).json({
+        message: 'Session ID not found. Please login again!',
+    });
+    } 
 
     const {user} = await this.sessionService.getSessionById(sessionId);
 

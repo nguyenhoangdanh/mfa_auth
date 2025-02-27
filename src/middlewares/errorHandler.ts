@@ -30,7 +30,7 @@ export const errorHandler: ErrorRequestHandler = (error: any, req: Request, res:
         return formatError(res, error);
     }   
 
-    res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
         message: 'Internal Server Error',
         error: error?.message ?? 'Unknown error occured',
     });

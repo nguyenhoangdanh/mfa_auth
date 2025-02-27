@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import { comparePassword, hashPassword } from "../../common/utils/bcrypt";
 
 interface IUserPreferences {
@@ -57,6 +57,10 @@ userSchema.set('toJSON', {
     }
 })
 
-const UserModel = mongoose.model<UserDocument>('User', userSchema);
+// const UserModel = mongoose.model<UserDocument>('User', userSchema);
+
+// Fix TypeScript issue by explicitly defining the model type
+const UserModel: Model<UserDocument> = mongoose.model<UserDocument>("User", userSchema);
+
 
 export default UserModel;
