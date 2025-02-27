@@ -1,6 +1,3 @@
-import { asyncHandler } from '../../middlewares/asyncHandler';
-import { userAgent } from 'next/server';
-
 export interface IRegisterDto {
     username: string;
     password: string;

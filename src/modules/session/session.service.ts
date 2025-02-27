@@ -1,8 +1,5 @@
 import { NotFoundException } from '../../common/utils/catch-error';
 import SessionModel from '../../database/models/session.model';
-import { user } from '@nextui-org/react';
-import { use } from 'passport';
-
 export class SessionService {
   constructor() {
     console.log('SessionService created');

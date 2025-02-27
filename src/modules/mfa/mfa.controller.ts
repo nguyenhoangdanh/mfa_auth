@@ -3,7 +3,6 @@ import {asyncHandler} from '../../middlewares/asyncHandler';
 import {MfaService} from './mfa.service';
 import {HTTPSTATUS} from '../../config/http.config';
 import {mfaSchema, verifyMfaForLoginSchema} from '../../common/validators/mfa.validator';
-import { userAgent } from 'next/server';
 import { setAuthenticaionCookies } from '../../common/utils/cookie';
 
 export class MfaController {
