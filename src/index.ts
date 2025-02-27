@@ -44,3 +44,5 @@ app.listen(config.PORT, async() => {
     console.log(`Server is running on port ${config.PORT} in ${config.NODE_ENV} mode`);
     await connectDatabase();
 });
+
+export default app;
