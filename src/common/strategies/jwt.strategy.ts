@@ -3,12 +3,12 @@ import {
   StrategyOptionsWithRequest,
   Strategy as JWTStrategy,
 } from 'passport-jwt';
-import {UnauthorizedException} from '../utils/catch-error';
-import {ErrorCode} from '../enums/error-code.enum';
-import {config} from '../../config/app.config';
-import passport, {PassportStatic} from 'passport';
-import {userService} from '../../modules/user/user.module';
-import {NextFunction, Request, Response} from 'express';
+import { UnauthorizedException } from '../utils/catch-error';
+import { ErrorCode } from '../enums/error-code.enum';
+import { config } from '../../config/app.config';
+import passport, { PassportStatic } from 'passport';
+import { userService } from '../../modules/user/user.module';
+import { NextFunction, Request, Response } from 'express';
 
 interface IJwtPayload {
   userId: string;
@@ -17,17 +17,15 @@ interface IJwtPayload {
 
 const options: StrategyOptionsWithRequest = {
   jwtFromRequest: ExtractJwt.fromExtractors([
-    req => {
-      const accessToken = req.cookies['accessToken'];
-
+    (req: Request) => {
+      const accessToken = req.cookies?.accessToken;
       if (!accessToken) {
         throw new UnauthorizedException(
           'Unauthorized access token',
           ErrorCode.AUTH_TOKEN_NOT_FOUND,
         );
       }
-
-      return accessToken || null;
+      return accessToken;
     },
   ]),
   secretOrKey: config.JWT.SECRET,
@@ -48,7 +46,7 @@ export const setupJwtStrategy = (passport: PassportStatic) => {
             return done(null, false);
           }
 
-          req.sessionId = payload.sessionId;
+          (req as any).sessionId = payload.sessionId;
           return done(null, user);
         } catch (error) {
           return done(error, false);
@@ -58,8 +56,6 @@ export const setupJwtStrategy = (passport: PassportStatic) => {
   );
 };
 
-// export const authenticateJwt = passport.authenticate('jwt', {session: false});
-
 export const authenticateJwt = (
   req: Request,
   res: Response,
@@ -67,18 +63,16 @@ export const authenticateJwt = (
 ) => {
   passport.authenticate(
     'jwt',
-    {session: false},
+    { session: false },
     (err: Error | null, user: Express.User | false, info: any) => {
       if (err || !user) {
-        return res
-          .status(401)
-          .json({
-            message: 'Unauthorized',
-            error: info?.message || err?.message,
-          });
+        return res.status(401).json({
+          message: 'Unauthorized',
+          error: info?.message || err?.message || 'Authentication failed',
+        });
       }
-      req.user = user;
-      next();
+      (req as any).user = user;
+      return next();
     },
-  );
+  )(req, res, next);
 };
